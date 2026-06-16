@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusIQ — Intelligent Navigation Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050b14;
+  --surface: #0d1a2e;
+  --surface2: #112240;
+  --accent: #00f5d4;
+  --accent2: #f72585;
+  --accent3: #7209b7;
+  --gold: #ffd60a;
+  --text: #e2e8f0;
+  --muted: #8892a4;
+  --card: rgba(17,34,64,0.85);
+  --glow: 0 0 30px rgba(0,245,212,0.3);
+  --glow2: 0 0 30px rgba(247,37,133,0.3);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+
+/* ANIMATED BG */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 20% 50%,rgba(114,9,183,0.15) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(0,245,212,0.1) 0%,transparent 50%),
+             radial-gradient(ellipse at 60% 80%,rgba(247,37,133,0.08) 0%,transparent 50%);
+  pointer-events:none;z-index:0;
+}
+
+/* NAVBAR */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(5,11,20,0.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(0,245,212,0.15);
+  padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;height:64px;
+}
+.logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-0.5px;
+}
+.nav-links{display:flex;gap:0.25rem;list-style:none;}
+.nav-links a{
+  color:var(--muted);text-decoration:none;padding:0.4rem 0.8rem;border-radius:6px;
+  font-size:0.85rem;font-weight:500;transition:all 0.2s;
+}
+.nav-links a:hover{color:var(--accent);background:rgba(0,245,212,0.08);}
+.nav-cta{
+  background:linear-gradient(135deg,var(--accent3),var(--accent2));
+  color:#fff;border:none;padding:0.45rem 1.2rem;border-radius:8px;
+  font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:var(--glow2);}
+
+/* HERO */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:6rem 2rem 4rem;position:relative;z-index:1;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(0,245,212,0.1);border:1px solid rgba(0,245,212,0.3);
+  color:var(--accent);padding:0.4rem 1rem;border-radius:100px;
+  font-size:0.78rem;font-family:'Space Mono',monospace;
+  margin-bottom:2rem;animation:fadeUp 0.8s ease both;
+}
+.hero-badge::before{content:'●';animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(3rem,8vw,6.5rem);line-height:1;
+  letter-spacing:-2px;margin-bottom:1.5rem;
+  animation:fadeUp 0.8s 0.15s ease both;
+}
+h1 span.grad{
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 60%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero-sub{
+  max-width:600px;color:var(--muted);font-size:1.1rem;line-height:1.7;
+  margin-bottom:3rem;animation:fadeUp 0.8s 0.3s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+
+/* SEARCH BAR */
+.search-container{
+  width:100%;max-width:700px;position:relative;
+  animation:fadeUp 0.8s 0.45s ease both;
+}
+.search-bar{
+  display:flex;align-items:center;
+  background:rgba(17,34,64,0.9);border:1.5px solid rgba(0,245,212,0.3);
+  border-radius:16px;padding:0.75rem 1rem;gap:1rem;
+  box-shadow:0 0 40px rgba(0,245,212,0.1);transition:border-color 0.3s,box-shadow 0.3s;
+}
+.search-bar:focus-within{border-color:var(--accent);box-shadow:var(--glow);}
+.search-icon{color:var(--accent);font-size:1.3rem;}
+.search-bar input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--text);font-size:1rem;font-family:'DM Sans',sans-serif;
+}
+.search-bar input::placeholder{color:var(--muted);}
+.search-btn{
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+  color:#fff;border:none;padding:0.6rem 1.4rem;border-radius:10px;
+  font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;
+  white-space:nowrap;transition:transform 0.2s;
+}
+.search-btn:hover{transform:scale(1.04);}
+.quick-btns{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:0.6rem;
+  margin-top:1.2rem;animation:fadeUp 0.8s 0.6s ease both;
+}
+.qbtn{
+  background:rgba(17,34,64,0.7);border:1px solid rgba(255,255,255,0.1);
+  color:var(--muted);padding:0.4rem 1rem;border-radius:100px;
+  font-size:0.82rem;cursor:pointer;transition:all 0.25s;font-family:'DM Sans',sans-serif;
+}
+.qbtn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,245,212,0.08);}
+
+/* STATS */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1.5rem;padding:3rem 2rem;max-width:1100px;margin:0 auto;position:relative;z-index:1;
+}
+.stat-card{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;padding:1.5rem;text-align:center;
+  backdrop-filter:blur(10px);transition:transform 0.3s,box-shadow 0.3s;
+}
+.stat-card:hover{transform:translateY(-4px);box-shadow:var(--glow);}
+.stat-num{
+  font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.stat-label{color:var(--muted);font-size:0.85rem;margin-top:0.3rem;}
+
+/* SECTION */
+.section{padding:5rem 2rem;max-width:1200px;margin:0 auto;position:relative;z-index:1;}
+.section-tag{
+  font-family:'Space Mono',monospace;font-size:0.75rem;
+  color:var(--accent);letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:0.75rem;
+}
+.section-title{
+  font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);
+  font-weight:800;letter-spacing:-1px;margin-bottom:1rem;
+}
+.section-title span{color:var(--accent);}
+.section-desc{color:var(--muted);max-width:550px;line-height:1.7;margin-bottom:3rem;}
+
+/* CAMPUS MAP */
+.map-section{position:relative;z-index:1;padding:5rem 2rem;}
+.map-wrapper{
+  max-width:1200px;margin:0 auto;
+  background:var(--card);border:1px solid rgba(0,245,212,0.2);
+  border-radius:24px;overflow:hidden;box-shadow:var(--glow);
+}
+.map-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.2rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.07);
+  background:rgba(0,0,0,0.3);
+}
+.map-header h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+.map-status{display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--accent);}
+.map-status::before{content:'●';animation:pulse 1.5s infinite;}
+.campus-map{width:100%;height:500px;position:relative;background:#0a1628;overflow:hidden;}
+.map-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,245,212,0.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,245,212,0.05) 1px,transparent 1px);
+  background-size:50px 50px;
+}
+/* Map paths */
+.map-path{
+  position:absolute;background:rgba(0,245,212,0.15);
+  border:1px solid rgba(0,245,212,0.3);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.3s;cursor:pointer;
+}
+.map-path:hover,.map-path.active{background:rgba(0,245,212,0.3);border-color:var(--accent);box-shadow:var(--glow);}
+.map-path span{font-size:0.7rem;color:var(--accent);font-family:'Space Mono',monospace;text-align:center;padding:4px;}
+.map-road{position:absolute;background:rgba(255,255,255,0.06);border-radius:2px;}
+/* Buildings */
+#b-gate{width:80px;height:60px;top:420px;left:260px;}
+#b-a{width:120px;height:90px;top:150px;left:100px;}
+#b-b{width:120px;height:90px;top:150px;left:300px;}
+#b-c{width:120px;height:90px;top:150px;left:500px;}
+#b-lib{width:140px;height:80px;top:280px;left:180px;}
+#b-caf{width:100px;height:70px;top:280px;left:400px;}
+#b-lab{width:130px;height:90px;top:150px;left:700px;}
+#b-hos{width:110px;height:80px;top:300px;left:700px;}
+#b-med{width:100px;height:65px;top:60px;left:700px;}
+#b-park{width:150px;height:70px;top:400px;left:600px;}
+/* Roads */
+.road-h1{height:15px;top:412px;left:0;right:0;}
+.road-h2{height:15px;top:250px;left:50px;width:850px;}
+.road-h3{height:15px;top:145px;left:50px;width:850px;}
+.road-v1{width:15px;top:0;left:250px;height:500px;}
+.road-v2{width:15px;top:0;left:490px;height:500px;}
+.road-v3{width:15px;top:0;left:690px;height:500px;}
+/* Nav line */
+.nav-line{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;
+}
+.map-dot{
+  position:absolute;width:14px;height:14px;border-radius:50%;
+  background:var(--accent2);box-shadow:0 0 15px rgba(247,37,133,0.8);
+  transition:all 0.5s ease;transform:translate(-50%,-50%);
+  z-index:10;
+}
+.map-dot.hidden{display:none;}
+.map-legend{
+  display:flex;flex-wrap:wrap;gap:1rem;
+  padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.07);
+  background:rgba(0,0,0,0.2);
+}
+.legend-item{display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:var(--muted);}
+.legend-dot{width:10px;height:10px;border-radius:3px;}
+
+/* FEATURES GRID */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;}
+.feature-card{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:20px;padding:1.75rem;transition:all 0.3s;
+  position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.3s;
+  background:linear-gradient(135deg,rgba(0,245,212,0.05),rgba(247,37,133,0.05));
+}
+.feature-card:hover{transform:translateY(-5px);border-color:rgba(0,245,212,0.2);}
+.feature-card:hover::before{opacity:1;}
+.feature-icon{
+  width:50px;height:50px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;margin-bottom:1.2rem;
+}
+.feature-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:0.6rem;}
+.feature-card p{color:var(--muted);font-size:0.88rem;line-height:1.6;}
+.feature-tag{
+  display:inline-block;margin-top:1rem;font-size:0.72rem;
+  font-family:'Space Mono',monospace;color:var(--accent);
+  background:rgba(0,245,212,0.1);padding:0.2rem 0.6rem;border-radius:4px;
+}
+
+/* ROUTE DEMO */
+.route-demo{
+  background:var(--card);border:1px solid rgba(0,245,212,0.2);
+  border-radius:24px;padding:2rem;box-shadow:var(--glow);
+}
+.route-inputs{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.route-input-group{display:flex;flex-direction:column;gap:0.5rem;}
+.route-input-group label{font-size:0.8rem;color:var(--muted);font-family:'Space Mono',monospace;}
+.route-input-group select,.route-input-group input{
+  background:rgba(5,11,20,0.8);border:1px solid rgba(255,255,255,0.1);
+  color:var(--text);padding:0.7rem 1rem;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;
+  transition:border-color 0.2s;
+}
+.route-input-group select:focus,.route-input-group input:focus{border-color:var(--accent);}
+.route-btn{
+  width:100%;background:linear-gradient(135deg,var(--accent),var(--accent3));
+  color:#fff;border:none;padding:0.85rem;border-radius:12px;
+  font-size:1rem;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+.route-btn:hover{transform:translateY(-2px);box-shadow:var(--glow);}
+.route-result{margin-top:1.5rem;display:none;}
+.route-result.show{display:block;animation:fadeUp 0.5s ease;}
+.route-steps{
+  display:flex;flex-direction:column;gap:0;
+  background:rgba(0,0,0,0.3);border-radius:14px;overflow:hidden;
+}
+.route-step{
+  display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;
+  border-bottom:1px solid rgba(255,255,255,0.05);position:relative;
+}
+.route-step:last-child{border-bottom:none;}
+.step-dot{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.8rem;font-weight:700;flex-shrink:0;
+}
+.step-dot.start{background:rgba(0,245,212,0.2);color:var(--accent);border:2px solid var(--accent);}
+.step-dot.mid{background:rgba(114,9,183,0.2);color:#b35efb;border:2px solid #b35efb;}
+.step-dot.end{background:rgba(247,37,133,0.2);color:var(--accent2);border:2px solid var(--accent2);}
+.step-info h4{font-size:0.9rem;font-weight:600;margin-bottom:0.15rem;}
+.step-info p{font-size:0.78rem;color:var(--muted);}
+.route-meta{
+  display:flex;gap:1.5rem;margin-top:1.2rem;
+  padding:1rem;background:rgba(0,245,212,0.06);border-radius:12px;
+  border:1px solid rgba(0,245,212,0.15);
+}
+.meta-item{display:flex;flex-direction:column;gap:0.2rem;}
+.meta-val{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--accent);}
+.meta-key{font-size:0.75rem;color:var(--muted);}
+
+/* AI CHAT */
+.chat-container{
+  background:var(--card);border:1px solid rgba(0,245,212,0.2);
+  border-radius:24px;overflow:hidden;box-shadow:var(--glow);
+  max-width:650px;margin:0 auto;
+}
+.chat-header{
+  display:flex;align-items:center;gap:1rem;
+  padding:1.2rem 1.5rem;background:linear-gradient(135deg,rgba(114,9,183,0.3),rgba(0,245,212,0.1));
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.chat-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent3),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+}
+.chat-info h3{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;}
+.chat-info p{font-size:0.75rem;color:var(--accent);}
+.chat-body{height:320px;overflow-y:auto;padding:1.2rem;display:flex;flex-direction:column;gap:0.8rem;}
+.chat-body::-webkit-scrollbar{width:4px;}
+.chat-body::-webkit-scrollbar-track{background:transparent;}
+.chat-body::-webkit-scrollbar-thumb{background:rgba(0,245,212,0.3);border-radius:2px;}
+.msg{max-width:80%;padding:0.7rem 1rem;border-radius:14px;font-size:0.875rem;line-height:1.5;}
+.msg.bot{
+  background:rgba(114,9,183,0.2);border:1px solid rgba(114,9,183,0.3);
+  border-bottom-left-radius:4px;align-self:flex-start;
+}
+.msg.user{
+  background:linear-gradient(135deg,rgba(0,245,212,0.2),rgba(0,245,212,0.1));
+  border:1px solid rgba(0,245,212,0.3);
+  border-bottom-right-radius:4px;align-self:flex-end;
+}
+.msg.typing{
+  background:rgba(114,9,183,0.2);border:1px solid rgba(114,9,183,0.3);
+  align-self:flex-start;border-bottom-left-radius:4px;
+}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:4px 0;}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:dot 1.2s infinite;}
+.typing-dots span:nth-child(2){animation-delay:0.2s;}
+.typing-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes dot{0%,80%,100%{opacity:0.3;transform:scale(0.8);}40%{opacity:1;transform:scale(1);}}
+.chat-input{
+  display:flex;gap:0.75rem;padding:1rem 1.2rem;
+  border-top:1px solid rgba(255,255,255,0.07);background:rgba(0,0,0,0.2);
+}
+.chat-input input{
+  flex:1;background:rgba(5,11,20,0.8);border:1px solid rgba(255,255,255,0.1);
+  color:var(--text);padding:0.65rem 1rem;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;
+  transition:border-color 0.2s;
+}
+.chat-input input:focus{border-color:var(--accent);}
+.chat-send,.chat-voice{
+  width:40px;height:40px;border-radius:10px;border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;transition:all 0.2s;
+}
+.chat-send{background:linear-gradient(135deg,var(--accent3),var(--accent2));color:#fff;}
+.chat-voice{background:rgba(0,245,212,0.1);color:var(--accent);border:1px solid rgba(0,245,212,0.3);}
+.chat-send:hover,.chat-voice:hover{transform:scale(1.08);}
+.quick-chips{display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.75rem 1.2rem;border-top:1px solid rgba(255,255,255,0.05);}
+.chip{
+  background:rgba(17,34,64,0.8);border:1px solid rgba(255,255,255,0.1);
+  color:var(--muted);padding:0.3rem 0.75rem;border-radius:100px;
+  font-size:0.75rem;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;
+}
+.chip:hover{color:var(--accent);border-color:var(--accent);background:rgba(0,245,212,0.07);}
+
+/* FACULTY FINDER */
+.faculty-search{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:24px;overflow:hidden;
+}
+.faculty-search-bar{
+  display:flex;gap:1rem;padding:1.2rem;
+  border-bottom:1px solid rgba(255,255,255,0.07);background:rgba(0,0,0,0.2);
+}
+.faculty-search-bar input{
+  flex:1;background:rgba(5,11,20,0.8);border:1px solid rgba(255,255,255,0.1);
+  color:var(--text);padding:0.65rem 1rem;border-radius:10px;
+  font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.2s;
+}
+.faculty-search-bar input:focus{border-color:var(--accent);}
+.faculty-search-btn{
+  background:linear-gradient(135deg,var(--accent),var(--accent3));
+  color:#fff;border:none;padding:0.65rem 1.4rem;border-radius:10px;
+  font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform 0.2s;
+}
+.faculty-search-btn:hover{transform:scale(1.03);}
+.faculty-list{padding:1.2rem;display:flex;flex-direction:column;gap:0.8rem;}
+.faculty-card{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,11,20,0.5);border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;padding:1rem 1.2rem;transition:all 0.25s;
+}
+.faculty-card:hover{border-color:rgba(0,245,212,0.2);background:rgba(0,245,212,0.04);}
+.faculty-info{display:flex;align-items:center;gap:1rem;}
+.faculty-avatar{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:700;font-family:'Syne',sans-serif;
+}
+.faculty-details h4{font-size:0.95rem;font-weight:600;margin-bottom:0.2rem;}
+.faculty-details p{font-size:0.78rem;color:var(--muted);}
+.faculty-room{text-align:right;}
+.faculty-room span{
+  display:block;font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--accent);
+}
+.faculty-room small{font-size:0.72rem;color:var(--muted);}
+.route-tag{
+  display:inline-block;margin-top:0.4rem;font-size:0.7rem;
+  background:rgba(0,245,212,0.1);color:var(--accent);
+  padding:0.2rem 0.5rem;border-radius:4px;cursor:pointer;
+  border:1px solid rgba(0,245,212,0.2);transition:all 0.2s;
+}
+.route-tag:hover{background:rgba(0,245,212,0.2);}
+
+/* CO SECTION */
+.co-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem;}
+.co-card{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:20px;padding:1.75rem;transition:all 0.3s;position:relative;overflow:hidden;
+}
+.co-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:20px 20px 0 0;
+}
+.co-card.co1::after{background:linear-gradient(90deg,#00f5d4,#7209b7);}
+.co-card.co2::after{background:linear-gradient(90deg,#7209b7,#f72585);}
+.co-card.co3::after{background:linear-gradient(90deg,#f72585,#ffd60a);}
+.co-card.co4::after{background:linear-gradient(90deg,#ffd60a,#00f5d4);}
+.co-card.co5::after{background:linear-gradient(90deg,#00f5d4,#f72585);}
+.co-card.co6::after{background:linear-gradient(90deg,#f72585,#7209b7,#00f5d4);}
+.co-card:hover{transform:translateY(-5px);border-color:rgba(0,245,212,0.15);}
+.co-num{
+  font-family:'Space Mono',monospace;font-size:0.7rem;
+  color:var(--muted);margin-bottom:0.4rem;letter-spacing:2px;
+}
+.co-card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:0.8rem;}
+.co-topics{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.co-topic{
+  font-size:0.72rem;padding:0.2rem 0.6rem;border-radius:100px;
+  background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid rgba(255,255,255,0.08);
+}
+
+/* ADMIN DASHBOARD */
+.admin-grid{display:grid;grid-template-columns:240px 1fr;gap:1.5rem;}
+.admin-sidebar{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:20px;padding:1.5rem;
+}
+.admin-sidebar h3{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:1.2rem;color:var(--muted);}
+.admin-nav{display:flex;flex-direction:column;gap:0.3rem;}
+.admin-nav-item{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.65rem 0.9rem;border-radius:10px;cursor:pointer;
+  font-size:0.875rem;color:var(--muted);transition:all 0.2s;
+}
+.admin-nav-item:hover,.admin-nav-item.active{
+  background:rgba(0,245,212,0.1);color:var(--accent);
+}
+.admin-nav-item .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--muted);transition:background 0.2s;
+}
+.admin-nav-item:hover .dot,.admin-nav-item.active .dot{background:var(--accent);}
+.admin-content{display:flex;flex-direction:column;gap:1.2rem;}
+.admin-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.metric-card{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;padding:1.2rem;
+}
+.metric-card .label{font-size:0.75rem;color:var(--muted);margin-bottom:0.4rem;}
+.metric-card .value{
+  font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;
+}
+.metric-card .change{font-size:0.75rem;margin-top:0.3rem;}
+.change.up{color:#2ecc71;}.change.down{color:#e74c3c;}
+.heatmap-card{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;padding:1.5rem;
+}
+.heatmap-card h3{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:1.2rem;}
+.heatmap{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;}
+.hm-cell{
+  aspect-ratio:1;border-radius:4px;
+  transition:transform 0.2s;cursor:pointer;
+}
+.hm-cell:hover{transform:scale(1.2);}
+.events-list{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:1.5rem;}
+.events-list h3{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:1rem;}
+.event-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.75rem 0;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.event-item:last-child{border:none;}
+.event-dot{width:8px;height:8px;border-radius:50%;margin-right:0.75rem;flex-shrink:0;}
+.event-name{font-size:0.875rem;}
+.event-loc{font-size:0.75rem;color:var(--muted);}
+.event-time{font-size:0.75rem;color:var(--accent);font-family:'Space Mono',monospace;}
+
+/* ACCESSIBILITY */
+.access-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;}
+.access-card{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;padding:1.5rem;text-align:center;transition:all 0.3s;
+}
+.access-card:hover{border-color:rgba(0,245,212,0.2);transform:translateY(-3px);}
+.access-icon{font-size:2.2rem;margin-bottom:0.75rem;}
+.access-card h3{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:0.4rem;}
+.access-card p{font-size:0.78rem;color:var(--muted);}
+
+/* TECH STACK */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;}
+.tech-card{
+  background:var(--card);border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px;padding:1.2rem;text-align:center;transition:all 0.3s;
+}
+.tech-card:hover{border-color:rgba(0,245,212,0.2);transform:translateY(-3px);}
+.tech-icon{font-size:1.8rem;margin-bottom:0.6rem;}
+.tech-card h4{font-size:0.85rem;font-weight:600;margin-bottom:0.2rem;}
+.tech-card p{font-size:0.72rem;color:var(--muted);}
+.tech-badge{
+  display:inline-block;margin-top:0.5rem;font-size:0.65rem;
+  background:rgba(0,245,212,0.1);color:var(--accent);
+  padding:0.15rem 0.5rem;border-radius:4px;font-family:'Space Mono',monospace;
+}
+
+/* FUTURE */
+.future-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.2rem;}
+.future-card{
+  background:var(--card);border:1px dashed rgba(255,255,255,0.12);
+  border-radius:16px;padding:1.5rem;transition:all 0.3s;
+}
+.future-card:hover{border-color:rgba(0,245,212,0.3);border-style:solid;transform:translateY(-3px);}
+.future-card .icon{font-size:1.8rem;margin-bottom:0.75rem;}
+.future-card h3{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;}
+.future-card p{font-size:0.82rem;color:var(--muted);}
+.future-tag{
+  display:inline-block;margin-top:0.75rem;font-size:0.68rem;
+  background:rgba(247,37,133,0.1);color:var(--accent2);
+  padding:0.2rem 0.5rem;border-radius:4px;border:1px solid rgba(247,37,133,0.2);
+  font-family:'Space Mono',monospace;
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid rgba(255,255,255,0.07);
+  padding:3rem 2rem;text-align:center;position:relative;z-index:1;
+}
+.footer-logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:0.75rem;
+}
+footer p{color:var(--muted);font-size:0.85rem;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:9999;
+  background:rgba(0,245,212,0.15);backdrop-filter:blur(20px);
+  border:1px solid var(--accent);border-radius:12px;
+  padding:0.9rem 1.4rem;font-size:0.875rem;color:var(--accent);
+  transform:translateY(100px);opacity:0;transition:all 0.4s ease;
+  max-width:300px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(0,245,212,0.2);border-radius:3px;}
+
+/* VOICE INDICATOR */
+.voice-wave{
+  display:none;align-items:center;gap:3px;height:20px;
+  margin-left:auto;
+}
+.voice-wave.active{display:flex;}
+.voice-wave span{
+  display:block;width:3px;background:var(--accent);border-radius:2px;
+  animation:wave 0.6s ease infinite;
+}
+.voice-wave span:nth-child(1){height:8px;animation-delay:0s;}
+.voice-wave span:nth-child(2){height:14px;animation-delay:0.1s;}
+.voice-wave span:nth-child(3){height:20px;animation-delay:0.2s;}
+.voice-wave span:nth-child(4){height:14px;animation-delay:0.3s;}
+.voice-wave span:nth-child(5){height:8px;animation-delay:0.4s;}
+@keyframes wave{0%,100%{transform:scaleY(0.5);}50%{transform:scaleY(1.2);}}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .route-inputs{grid-template-columns:1fr;}
+  .admin-grid{grid-template-columns:1fr;}
+  .admin-sidebar{display:none;}
+  .admin-metrics{grid-template-columns:repeat(2,1fr);}
+  nav .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">🧭 CampusIQ</div>
+  <ul class="nav-links">
+    <li><a href="#map">Map</a></li>
+    <li><a href="#navigate">Navigate</a></li>
+    <li><a href="#assistant">AI Chat</a></li>
+    <li><a href="#faculty">Faculty</a></li>
+    <li><a href="#admin">Admin</a></li>
+    <li><a href="#cos">Outcomes</a></li>
+  </ul>
+  <button class="nav-cta" onclick="showToast('🎓 Welcome to CampusIQ!')">Get Started</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">● LIVE — Intelligent Campus Navigation System</div>
+  <h1>Navigate Your<br><span class="grad">Campus Smartly</span></h1>
+  <p class="hero-sub">AI-powered navigation assistant helping students, faculty, and visitors find any location with real-time routing, voice guidance, and intelligent recommendations.</p>
+  <div class="search-container">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="heroSearch" placeholder="Where do you want to go? Try 'Computer Science Lab'..." onkeydown="if(event.key==='Enter')heroNavigate()">
+      <button class="search-btn" onclick="heroNavigate()">Find Route →</button>
+    </div>
+    <div class="quick-btns">
+      <button class="qbtn" onclick="setSearch('Academic Block A')">🏛️ Academic Blocks</button>
+      <button class="qbtn" onclick="setSearch('Computer Lab')">💻 Labs</button>
+      <button class="qbtn" onclick="setSearch('Library')">📚 Library</button>
+      <button class="qbtn" onclick="setSearch('Cafeteria')">🍽️ Cafeteria</button>
+      <button class="qbtn" onclick="setSearch('Hostel')">🏠 Hostel</button>
+      <button class="qbtn" onclick="setSearch('Parking Area')">🅿️ Parking</button>
+      <button class="qbtn" onclick="setSearch('Medical Center')">🏥 Medical Center</button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-card"><div class="stat-num" id="s1">0</div><div class="stat-label">Buildings Mapped</div></div>
+  <div class="stat-card"><div class="stat-num" id="s2">0</div><div class="stat-label">Routes Available</div></div>
+  <div class="stat-card"><div class="stat-num" id="s3">0</div><div class="stat-label">Faculty Listed</div></div>
+  <div class="stat-card"><div class="stat-num" id="s4">0</div><div class="stat-label">Daily Navigations</div></div>
+  <div class="stat-card"><div class="stat-num" id="s5">0</div><div class="stat-label">QR Stations</div></div>
+</div>
+
+<!-- CAMPUS MAP -->
+<section class="map-section" id="map">
+  <div style="max-width:1200px;margin:0 auto;padding:0 0 1.5rem;">
+    <div class="section-tag">INTERACTIVE MAP</div>
+    <h2 class="section-title">Live <span>Campus</span> Map</h2>
+  </div>
+  <div class="map-wrapper">
+    <div class="map-header">
+      <h3>🗺️ VNIT Campus — Full Layout</h3>
+      <span class="map-status">GPS Active — 12 users online</span>
+    </div>
+    <div class="campus-map" id="campusMap">
+      <div class="map-grid"></div>
+      <!-- Roads -->
+      <div class="map-road road-h1"></div>
+      <div class="map-road road-h2"></div>
+      <div class="map-road road-h3"></div>
+      <div class="map-road road-v1"></div>
+      <div class="map-road road-v2"></div>
+      <div class="map-road road-v3"></div>
+      <!-- Buildings -->
+      <div class="map-path" id="b-gate" onclick="selectBuilding('Main Gate','🚪')"><span>🚪 Main Gate</span></div>
+      <div class="map-path" id="b-a" onclick="selectBuilding('Block A — CSE','🏛️')"><span>🏛️ Block A CSE</span></div>
+      <div class="map-path" id="b-b" onclick="selectBuilding('Block B — ECE','🏛️')"><span>🏛️ Block B ECE</span></div>
+      <div class="map-path" id="b-c" onclick="selectBuilding('Block C — MECH','🏛️')"><span>🏛️ Block C MECH</span></div>
+      <div class="map-path" id="b-lib" onclick="selectBuilding('Library','📚')"><span>📚 Central Library</span></div>
+      <div class="map-path" id="b-caf" onclick="selectBuilding('Cafeteria','🍽️')"><span>🍽️ Cafeteria</span></div>
+      <div class="map-path" id="b-lab" onclick="selectBuilding('Computer Labs','💻')"><span>💻 Computer Labs</span></div>
+      <div class="map-path" id="b-hos" onclick="selectBuilding('Hostel Complex','🏠')"><span>🏠 Hostel</span></div>
+      <div class="map-path" id="b-med" onclick="selectBuilding('Medical Center','🏥')"><span>🏥 Medical</span></div>
+      <div class="map-path" id="b-park" onclick="selectBuilding('Parking Area','🅿️')"><span>🅿️ Parking</span></div>
+      <!-- User dot -->
+      <div class="map-dot hidden" id="userDot"></div>
+      <!-- Nav SVG overlay -->
+      <svg class="nav-line" id="navLine"></svg>
+    </div>
+    <div class="map-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#00f5d4"></div>Academic</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f72585"></div>Services</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffd60a"></div>Residential</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7209b7"></div>Selected</div>
+      <div class="legend-item">🔴 Your Location</div>
+      <div class="legend-item">💡 Click any building to navigate</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTE NAVIGATION -->
+<section class="section" id="navigate">
+  <div class="section-tag">ROUTE OPTIMIZER</div>
+  <h2 class="section-title">Find Your <span>Shortest</span> Route</h2>
+  <p class="section-desc">AI-powered A* algorithm calculates the optimal path with walking time and step-by-step directions.</p>
+  <div class="route-demo">
+    <div class="route-inputs">
+      <div class="route-input-group">
+        <label>📍 FROM (Current Location)</label>
+        <select id="fromLoc">
+          <option value="main_gate">Main Gate</option>
+          <option value="block_a">Block A — CSE</option>
+          <option value="block_b">Block B — ECE</option>
+          <option value="library">Central Library</option>
+          <option value="cafeteria">Cafeteria</option>
+          <option value="hostel">Hostel Complex</option>
+          <option value="medical">Medical Center</option>
+          <option value="parking">Parking Area</option>
+        </select>
+      </div>
+      <div class="route-input-group">
+        <label>🏁 TO (Destination)</label>
+        <select id="toLoc">
+          <option value="comp_lab">Computer Science Lab</option>
+          <option value="library">Central Library</option>
+          <option value="cafeteria">Cafeteria</option>
+          <option value="block_a">Block A — CSE</option>
+          <option value="block_b">Block B — ECE</option>
+          <option value="block_c">Block C — MECH</option>
+          <option value="medical">Medical Center</option>
+          <option value="hostel">Hostel Complex</option>
+          <option value="parking">Parking Area</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:0.5rem;">
+      <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--muted);cursor:pointer;">
+        <input type="checkbox" id="accessCheck" style="accent-color:var(--accent)"> ♿ Wheelchair accessible route
+      </label>
+      <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--muted);cursor:pointer;">
+        <input type="checkbox" id="avoidCrowd" style="accent-color:var(--accent)"> 👥 Avoid crowded areas
+      </label>
+    </div>
+    <button class="route-btn" onclick="calculateRoute()">🧭 Calculate Optimal Route (A* Algorithm)</button>
+    <div class="route-result" id="routeResult">
+      <div class="route-steps" id="routeSteps"></div>
+      <div class="route-meta" id="routeMeta"></div>
+    </div>
+  </div>
+</section>
+
+<!-- AI ASSISTANT -->
+<section class="section" id="assistant" style="background:linear-gradient(180deg,transparent,rgba(114,9,183,0.05),transparent);">
+  <div class="section-tag">AI CHATBOT</div>
+  <h2 class="section-title">Chat with <span>CampusBot</span></h2>
+  <p class="section-desc">Ask anything about campus locations, faculty, events, or get intelligent routing help.</p>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-info">
+        <h3>CampusBot AI</h3>
+        <p>● Online — Powered by NLP + Graph Search</p>
+      </div>
+      <div class="voice-wave" id="voiceWave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="msg bot">👋 Hello! I'm CampusBot. I can help you navigate campus, find faculty, locate rooms, check events, and more. How can I assist you today?</div>
+    </div>
+    <div class="quick-chips">
+      <div class="chip" onclick="sendChip('Where is the library?')">📚 Library?</div>
+      <div class="chip" onclick="sendChip('Find Dr. Rao')">👤 Dr. Rao</div>
+      <div class="chip" onclick="sendChip('Nearest restroom')">🚻 Restroom</div>
+      <div class="chip" onclick="sendChip('Show campus events today')">📅 Events</div>
+      <div class="chip" onclick="sendChip('Cafeteria timings')">🍽️ Cafeteria</div>
+      <div class="chip" onclick="sendChip('Wheelchair accessible route to library')">♿ Accessible</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Ask me anything about campus..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="chat-voice" id="voiceBtn" onclick="toggleVoice()">🎤</button>
+      <button class="chat-send" onclick="sendMsg()">➤</button>
+    </div>
+  </div>
+</section>
+
+<!-- FACULTY FINDER -->
+<section class="section" id="faculty">
+  <div class="section-tag">FACULTY & ROOM FINDER</div>
+  <h2 class="section-title">Find <span>Faculty</span> & Rooms</h2>
+  <p class="section-desc">Search by faculty name, room number, or department and get direct routing.</p>
+  <div class="faculty-search">
+    <div class="faculty-search-bar">
+      <input type="text" id="facultyInput" placeholder="Search faculty name, room number, or department..." onkeydown="if(event.key==='Enter')searchFaculty()" oninput="searchFaculty()">
+      <button class="faculty-search-btn" onclick="searchFaculty()">Search</button>
+    </div>
+    <div class="faculty-list" id="facultyList"></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="section-tag">FEATURES</div>
+  <h2 class="section-title">Everything You <span>Need</span></h2>
+  <p class="section-desc">A full-stack intelligent navigation platform with AI at its core.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(0,245,212,0.1);">🛰️</div>
+      <h3>Real-Time GPS Tracking</h3>
+      <p>Live location updates using campus Wi-Fi positioning and GPS. Dynamic rerouting if you take a wrong turn.</p>
+      <span class="feature-tag">CO1 — Agent/Environment Model</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(247,37,133,0.1);">🧠</div>
+      <h3>A* Route Optimization</h3>
+      <p>Shortest path computation using A* search with admissible heuristics. BFS/DFS fallback for exploration.</p>
+      <span class="feature-tag">CO2 — Search Algorithms</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(114,9,183,0.1);">🎯</div>
+      <h3>Constraint-Based Routing</h3>
+      <p>CSP-based scheduling for events, accessibility constraints, crowd avoidance using backtracking + propagation.</p>
+      <span class="feature-tag">CO3 — CSP & Backtracking</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,214,10,0.1);">🎮</div>
+      <h3>Multi-User Decision Logic</h3>
+      <p>Game-theoretic route suggestions for peak hours. Alpha-beta style crowd routing decisions.</p>
+      <span class="feature-tag">CO4 — Adversarial & Utility</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(0,245,212,0.1);">📊</div>
+      <h3>Probabilistic Crowd Sensing</h3>
+      <p>Bayesian inference on crowd density. HMM for tracking movement patterns. Sensor fusion from Wi-Fi beacons.</p>
+      <span class="feature-tag">CO5 — Probabilistic Reasoning</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(247,37,133,0.1);">🔗</div>
+      <h3>Hybrid AI Architecture</h3>
+      <p>Combines search + CSP + probabilistic inference + decision logic for explainable, ethical navigation.</p>
+      <span class="feature-tag">CO6 — Hybrid Systems</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(114,9,183,0.1);">🎤</div>
+      <h3>Voice Navigation</h3>
+      <p>Natural language commands. "Take me to seminar hall." Voice responses with directions and ETA.</p>
+      <span class="feature-tag">NLP + Voice Recognition</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,214,10,0.1);">📱</div>
+      <h3>QR Code Stations</h3>
+      <p>Scan QR codes placed around campus to auto-detect location and get instant routing to any destination.</p>
+      <span class="feature-tag">Location Services</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(0,245,212,0.1);">♿</div>
+      <h3>Accessibility First</h3>
+      <p>Dedicated wheelchair routes, elevator mapping, ramp locations, and accessible washroom finder.</p>
+      <span class="feature-tag">Inclusive Design</span>
+    </div>
+  </div>
+</section>
+
+<!-- COURSE OUTCOMES -->
+<section class="section" id="cos">
+  <div class="section-tag">COURSE OUTCOMES</div>
+  <h2 class="section-title">AI Course <span>Outcomes</span></h2>
+  <p class="section-desc">CampusIQ implements all 6 AI course outcomes in a real-world intelligent system.</p>
+  <div class="co-grid">
+    <div class="co-card co1">
+      <div class="co-num">CO1 — FOUNDATIONS</div>
+      <h3>🤖 Agent Model & Knowledge Representation</h3>
+      <div class="co-topics">
+        <span class="co-topic">PEAS Framework</span>
+        <span class="co-topic">Environment Types</span>
+        <span class="co-topic">State Spaces</span>
+        <span class="co-topic">Graph Structures</span>
+        <span class="co-topic">Python Typing</span>
+        <span class="co-topic">Priority Queues</span>
+        <span class="co-topic">Complexity Analysis</span>
+      </div>
+    </div>
+    <div class="co-card co2">
+      <div class="co-num">CO2 — SEARCH</div>
+      <h3>🔍 Search Algorithms & Heuristics</h3>
+      <div class="co-topics">
+        <span class="co-topic">BFS / DFS</span>
+        <span class="co-topic">UCS</span>
+        <span class="co-topic">A* Search</span>
+        <span class="co-topic">Greedy Best-First</span>
+        <span class="co-topic">Admissible Heuristics</span>
+        <span class="co-topic">IDA* Concept</span>
+        <span class="co-topic">Node Expansion</span>
+      </div>
+    </div>
+    <div class="co-card co3">
+      <div class="co-num">CO3 — CSP</div>
+      <h3>♟️ Constraint Satisfaction Problems</h3>
+      <div class="co-topics">
+        <span class="co-topic">CSP Modeling</span>
+        <span class="co-topic">Backtracking</span>
+        <span class="co-topic">Arc Consistency</span>
+        <span class="co-topic">MRV / LCV</span>
+        <span class="co-topic">Min-Conflicts</span>
+        <span class="co-topic">Timetabling</span>
+        <span class="co-topic">SAT Modeling</span>
+      </div>
+    </div>
+    <div class="co-card co4">
+      <div class="co-num">CO4 — ADVERSARIAL</div>
+      <h3>⚔️ Games, Utility & Decision Making</h3>
+      <div class="co-topics">
+        <span class="co-topic">Utility Functions</span>
+        <span class="co-topic">Minimax</span>
+        <span class="co-topic">Alpha-Beta Pruning</span>
+        <span class="co-topic">Depth Limits</span>
+        <span class="co-topic">Expectimax</span>
+        <span class="co-topic">Multi-Agent</span>
+        <span class="co-topic">Policy Selection</span>
+      </div>
+    </div>
+    <div class="co-card co5">
+      <div class="co-num">CO5 — PROBABILISTIC</div>
+      <h3>📊 Bayesian Networks & Uncertainty</h3>
+      <div class="co-topics">
+        <span class="co-topic">Bayes Rule</span>
+        <span class="co-topic">Bayesian Networks</span>
+        <span class="co-topic">Variable Elimination</span>
+        <span class="co-topic">HMM Tracking</span>
+        <span class="co-topic">Sensor Fusion</span>
+        <span class="co-topic">Expected Utility</span>
+        <span class="co-topic">Sampling Inference</span>
+      </div>
+    </div>
+    <div class="co-card co6">
+      <div class="co-num">CO6 — INTEGRATION</div>
+      <h3>🔗 Hybrid AI & Explainability</h3>
+      <div class="co-topics">
+        <span class="co-topic">Hybrid Architecture</span>
+        <span class="co-topic">Explainable AI</span>
+        <span class="co-topic">Ethics & Bias</span>
+        <span class="co-topic">Performance Engineering</span>
+        <span class="co-topic">Failure Analysis</span>
+        <span class="co-topic">ML/DL Readiness</span>
+        <span class="co-topic">NLP Integration</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACCESSIBILITY -->
+<section class="section">
+  <div class="section-tag">INCLUSIVE DESIGN</div>
+  <h2 class="section-title">Accessibility <span>Support</span></h2>
+  <p class="section-desc">CampusIQ is designed for everyone — including students with disabilities.</p>
+  <div class="access-grid">
+    <div class="access-card">
+      <div class="access-icon">♿</div>
+      <h3>Wheelchair Routes</h3>
+      <p>Fully accessible paths avoiding stairs and obstacles</p>
+    </div>
+    <div class="access-card">
+      <div class="access-icon">🛗</div>
+      <h3>Elevator Mapping</h3>
+      <p>All elevator locations with real-time availability</p>
+    </div>
+    <div class="access-card">
+      <div class="access-icon">🚪</div>
+      <h3>Ramp Locator</h3>
+      <p>Find all accessible ramps around campus buildings</p>
+    </div>
+    <div class="access-card">
+      <div class="access-icon">🚻</div>
+      <h3>Accessible Washrooms</h3>
+      <p>Nearest accessible restroom with route guidance</p>
+    </div>
+    <div class="access-card">
+      <div class="access-icon">🦯</div>
+      <h3>Visual Assistance</h3>
+      <p>High-contrast mode and audio descriptions enabled</p>
+    </div>
+    <div class="access-card">
+      <div class="access-icon">🔊</div>
+      <h3>Audio Navigation</h3>
+      <p>Full audio guidance for all routes and directions</p>
+    </div>
+  </div>
+</section>
+
+<!-- ADMIN DASHBOARD -->
+<section class="section" id="admin">
+  <div class="section-tag">ADMIN PANEL</div>
+  <h2 class="section-title">Admin <span>Dashboard</span></h2>
+  <p class="section-desc">Monitor navigation usage, manage buildings, and view live heat maps.</p>
+  <div class="admin-grid">
+    <div class="admin-sidebar">
+      <h3>MANAGEMENT</h3>
+      <div class="admin-nav">
+        <div class="admin-nav-item active" onclick="adminTab(this,'overview')"><span class="dot"></span>Overview</div>
+        <div class="admin-nav-item" onclick="adminTab(this,'buildings')"><span class="dot"></span>Buildings</div>
+        <div class="admin-nav-item" onclick="adminTab(this,'events')"><span class="dot"></span>Events</div>
+        <div class="admin-nav-item" onclick="adminTab(this,'heatmap')"><span class="dot"></span>Heat Map</div>
+        <div class="admin-nav-item" onclick="adminTab(this,'users')"><span class="dot"></span>Users</div>
+      </div>
+    </div>
+    <div class="admin-content">
+      <div class="admin-metrics">
+        <div class="metric-card">
+          <div class="label">Total Navigations</div>
+          <div class="value" style="color:var(--accent)">1,284</div>
+          <div class="change up">↑ 18% today</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">Active Users</div>
+          <div class="value" style="color:var(--accent2)">47</div>
+          <div class="change up">↑ Live</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">Avg. Route Time</div>
+          <div class="value" style="color:var(--gold)">6.2m</div>
+          <div class="change down">↓ 1.1m faster</div>
+        </div>
+        <div class="metric-card">
+          <div class="label">QR Scans</div>
+          <div class="value" style="color:#b35efb">312</div>
+          <div class="change up">↑ 44% week</div>
+        </div>
+      </div>
+      <div class="heatmap-card">
+        <h3>🔥 Crowd Heat Map — Live Campus Activity</h3>
+        <div class="heatmap" id="heatmapGrid"></div>
+      </div>
+      <div class="events-list">
+        <h3>📅 Today's Campus Events</h3>
+        <div class="event-item">
+          <div class="event-dot" style="background:#00f5d4"></div>
+          <div><div class="event-name">AI Symposium 2025</div><div class="event-loc">📍 Seminar Hall, Block A</div></div>
+          <div class="event-time">10:00 AM</div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot" style="background:#f72585"></div>
+          <div><div class="event-name">CSE Department Meet</div><div class="event-loc">📍 Room 301, Block B</div></div>
+          <div class="event-time">02:00 PM</div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot" style="background:#ffd60a"></div>
+          <div><div class="event-name">Sports Day Registration</div><div class="event-loc">📍 Ground Floor, Main Block</div></div>
+          <div class="event-time">04:30 PM</div>
+        </div>
+        <div class="event-item">
+          <div class="event-dot" style="background:#7209b7"></div>
+          <div><div class="event-name">Library Book Fair</div><div class="event-loc">📍 Central Library</div></div>
+          <div class="event-time">All Day</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="section">
+  <div class="section-tag">TECHNOLOGY</div>
+  <h2 class="section-title">Built With <span>Modern</span> Stack</h2>
+  <p class="section-desc">Production-grade technologies for a scalable, intelligent navigation system.</p>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tech-icon">⚛️</div><h4>React.js</h4><p>Dynamic UI</p><span class="tech-badge">Frontend</span></div>
+    <div class="tech-card"><div class="tech-icon">🟢</div><h4>Node.js</h4><p>API Server</p><span class="tech-badge">Backend</span></div>
+    <div class="tech-card"><div class="tech-icon">🗺️</div><h4>Leaflet.js</h4><p>Campus Maps</p><span class="tech-badge">Maps</span></div>
+    <div class="tech-card"><div class="tech-icon">🍃</div><h4>MongoDB</h4><p>Database</p><span class="tech-badge">Storage</span></div>
+    <div class="tech-card"><div class="tech-icon">🐍</div><h4>Python</h4><p>AI Algorithms</p><span class="tech-badge">AI/ML</span></div>
+    <div class="tech-card"><div class="tech-icon">🤖</div><h4>NLP Engine</h4><p>Chat AI</p><span class="tech-badge">AI</span></div>
+    <div class="tech-card"><div class="tech-icon">📡</div><h4>WebSocket</h4><p>Real-Time</p><span class="tech-badge">Live</span></div>
+    <div class="tech-card"><div class="tech-icon">☁️</div><h4>AWS</h4><p>Cloud Deploy</p><span class="tech-badge">Infra</span></div>
+  </div>
+</section>
+
+<!-- FUTURE ENHANCEMENTS -->
+<section class="section">
+  <div class="section-tag">ROADMAP</div>
+  <h2 class="section-title">Future <span>Enhancements</span></h2>
+  <p class="section-desc">Next-generation features already in planning for CampusIQ 2.0.</p>
+  <div class="future-grid">
+    <div class="future-card">
+      <div class="icon">📡</div>
+      <h3>Bluetooth Indoor Navigation</h3>
+      <p>Ultra-precise indoor routing using BLE beacons with sub-meter accuracy inside buildings.</p>
+      <span class="future-tag">PLANNED Q2</span>
+    </div>
+    <div class="future-card">
+      <div class="icon">🥽</div>
+      <h3>AR Navigation Overlay</h3>
+      <p>Point your camera and see direction arrows overlaid on real world through augmented reality.</p>
+      <span class="future-tag">IN RESEARCH</span>
+    </div>
+    <div class="future-card">
+      <div class="icon">👁️</div>
+      <h3>Real-Time Crowd Detection</h3>
+      <p>Computer vision cameras + density estimation to avoid congested areas automatically.</p>
+      <span class="future-tag">PLANNED Q3</span>
+    </div>
+    <div class="future-card">
+      <div class="icon">🚨</div>
+      <h3>Emergency Evacuation</h3>
+      <p>Instant emergency routing with exit guidance, assembly point navigation, and alerts.</p>
+      <span class="future-tag">CRITICAL PATH</span>
+    </div>
+    <div class="future-card">
+      <div class="icon">🌐</div>
+      <h3>Multilingual Support</h3>
+      <p>Full support in English, Telugu, and Hindi for the diverse campus community.</p>
+      <span class="future-tag">PLANNED Q1</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🧭 CampusIQ</div>
+  <p>Intelligent Campus Navigation Assistant — Powered by AI, Graph Search & Probabilistic Reasoning</p>
+  <p style="margin-top:0.5rem;font-size:0.75rem;">Built for Presentation | CO1 · CO2 · CO3 · CO4 · CO5 · CO6 Integrated</p>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== DATA =====================
+const facultyData = [
+  {name:'Dr. A. Rao',dept:'CSE',room:'Room 203',block:'Block B',avatar:'AR',color:'rgba(0,245,212,0.2)',tc:'#00f5d4'},
+  {name:'Dr. S. Kumar',dept:'ECE',room:'Room 105',block:'Block C',avatar:'SK',color:'rgba(247,37,133,0.2)',tc:'#f72585'},
+  {name:'Prof. M. Reddy',dept:'MECH',room:'Room 312',block:'Block A',avatar:'MR',color:'rgba(114,9,183,0.2)',tc:'#b35efb'},
+  {name:'Dr. P. Sharma',dept:'IT',room:'Room 204',block:'Block B',avatar:'PS',color:'rgba(255,214,10,0.2)',tc:'#ffd60a'},
+  {name:'Dr. L. Naidu',dept:'CSE',room:'Room 101',block:'Block A',avatar:'LN',color:'rgba(0,245,212,0.2)',tc:'#00f5d4'},
+  {name:'Prof. R. Iyengar',dept:'ECE',room:'Lab 02',block:'Block C',avatar:'RI',color:'rgba(247,37,133,0.2)',tc:'#f72585'},
+  {name:'Dr. K. Mishra',dept:'CIVIL',room:'Room 405',block:'Block D',avatar:'KM',color:'rgba(114,9,183,0.2)',tc:'#b35efb'},
+];
+
+// Each route: array of { label, instruction, dist, landmark }
+const routes = {
+
+  // ── FROM MAIN GATE ──
+  main_gate_comp_lab: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate security checkpoint. Face north into campus.',   dist:0,    landmark:'Security booth on your right'},
+    {label:'Main Avenue',         instruction:'Walk straight 120 m along the Main Avenue (tree-lined central road).', dist:120,  landmark:'Notice the flagpole roundabout ahead'},
+    {label:'Flagpole Roundabout', instruction:'At the roundabout, take the RIGHT exit towards the Academic Zone.',    dist:200,  landmark:'Admin Block on your left'},
+    {label:'Block A Junction',    instruction:'Pass Block A on your left. Continue straight 80 m.',                   dist:280,  landmark:'Block A main entrance (left)'},
+    {label:'Library Crossroads',  instruction:'At the T-junction near the Library, turn RIGHT.',                      dist:360,  landmark:'Library glass facade visible ahead-left'},
+    {label:'Computer Lab Road',   instruction:'Walk 90 m east along the Lab Road. Labs entrance is on your left.',    dist:450,  landmark:'Water cooler station on the right'},
+    {label:'Computer Labs 💻',    instruction:'You have arrived at the Computer Science Labs. Enter via the main door.',dist:540, landmark:'Destination — Ground floor, CSE Dept'},
+  ],
+  main_gate_library: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate. Walk straight north along the Main Avenue.',   dist:0,   landmark:'Security booth on your right'},
+    {label:'Main Avenue',         instruction:'Continue 120 m straight. Keep walking past the welcome board.',        dist:120, landmark:'Welcome board on your left'},
+    {label:'Flagpole Roundabout', instruction:'At the roundabout go STRAIGHT (north). Library is 150 m ahead.',       dist:200, landmark:'Roundabout — flagpole in centre'},
+    {label:'Library Approach',    instruction:'Walk 100 m north. The Library glass building will appear on your right.',dist:300,landmark:'Fountain garden on your left'},
+    {label:'Central Library 📚',  instruction:'Turn RIGHT at the library signboard. Enter through the main glass doors.',dist:400,landmark:'Destination — Central Library, open 8 AM–8 PM'},
+  ],
+  main_gate_cafeteria: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate. Walk north along Main Avenue.',                 dist:0,   landmark:'Security booth'},
+    {label:'Main Avenue',         instruction:'Walk 120 m straight till the Flagpole Roundabout.',                    dist:120, landmark:'Welcome board on your left'},
+    {label:'Flagpole Roundabout', instruction:'Take the LEFT exit (westward) towards the Student Services Zone.',     dist:200, landmark:'Roundabout — look left for café signboard'},
+    {label:'Student Services Road',instruction:'Walk 100 m west. You will see the cafeteria building ahead.',         dist:300, landmark:'Notice tuck shop kiosks on the right'},
+    {label:'Cafeteria 🍽️',        instruction:'Arrived! Enter through the double doors on the east side.',            dist:380, landmark:'Destination — Open Mon–Sat 7:30 AM–9:30 PM'},
+  ],
+  main_gate_block_a: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate. Walk straight north 120 m along Main Avenue.', dist:0,   landmark:'Security booth'},
+    {label:'Flagpole Roundabout', instruction:'At the roundabout, take the RIGHT exit into the Academic Zone.',       dist:200, landmark:'Roundabout with flagpole'},
+    {label:'Academic Zone Road',  instruction:'Walk 80 m. Block A is the first large building on your LEFT.',         dist:280, landmark:'Noticeboard wall on the left'},
+    {label:'Block A 🏛️',          instruction:'Enter through the main entrance on the south side. CSE Dept inside.',  dist:340, landmark:'Destination — Block A, CSE & IT Departments'},
+  ],
+  main_gate_block_b: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate. Walk north along Main Avenue.',                 dist:0,   landmark:'Security booth'},
+    {label:'Flagpole Roundabout', instruction:'At the roundabout, take the RIGHT exit into the Academic Zone.',       dist:200, landmark:'Flagpole roundabout'},
+    {label:'Academic Zone Road',  instruction:'Walk 80 m past Block A. Continue straight another 100 m.',             dist:340, landmark:'Block A on your left'},
+    {label:'Block B Junction',    instruction:'Turn SLIGHT LEFT at the Block B signboard.',                           dist:420, landmark:'Speed bump near the junction'},
+    {label:'Block B 🏛️',          instruction:'Arrived at Block B. Main entrance faces south. ECE Dept on 1st floor.',dist:480, landmark:'Destination — Block B, ECE & EEE Departments'},
+  ],
+  main_gate_block_c: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate. Walk north 120 m along Main Avenue.',          dist:0,   landmark:'Security booth'},
+    {label:'Flagpole Roundabout', instruction:'At the roundabout, go STRAIGHT toward the Academic Zone.',             dist:200, landmark:'Flagpole roundabout'},
+    {label:'Academic Zone Road',  instruction:'Walk 200 m past Block A and Block B.',                                 dist:400, landmark:'Block A and B on your left'},
+    {label:'Block C Junction',    instruction:'Turn LEFT at the "Block C / MECH" signboard.',                         dist:480, landmark:'Mechanical workshop sounds audible'},
+    {label:'Block C 🏛️',          instruction:'Block C main entrance is ahead. MECH & Civil departments inside.',     dist:540, landmark:'Destination — Block C, Mechanical Engineering'},
+  ],
+  main_gate_medical: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate. Immediately turn LEFT (east) along the perimeter road.',dist:0, landmark:'Boundary wall on right'},
+    {label:'East Perimeter Road', instruction:'Walk east 150 m along the perimeter road (keep the boundary wall on your right).',dist:150,landmark:'CCTV camera pole on the right'},
+    {label:'Medical Lane Turn',   instruction:'Turn LEFT at the Red Cross signboard. Walk north 80 m.',               dist:230, landmark:'Red Cross / Medical signboard'},
+    {label:'Medical Center 🏥',   instruction:'Arrived at the Medical Center. Emergency entrance on the left side.',  dist:310, landmark:'Destination — Campus Medical Center, 24×7'},
+  ],
+  main_gate_hostel: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate. Walk north along Main Avenue 120 m.',          dist:0,   landmark:'Security booth'},
+    {label:'Flagpole Roundabout', instruction:'At the roundabout, take the LEFT exit towards the Residential Zone.',  dist:200, landmark:'Flagpole roundabout'},
+    {label:'Residential Avenue',  instruction:'Walk west 100 m then turn RIGHT (north) at the hostel signboard.',     dist:340, landmark:'Common room block visible on right'},
+    {label:'Hostel Approach',     instruction:'Walk north 120 m along the tree-lined hostel lane.',                   dist:460, landmark:'Cricket pitch on your left'},
+    {label:'Hostel Complex 🏠',   instruction:'Main hostel reception is straight ahead. Boys A–D blocks on the left.', dist:560, landmark:'Destination — Hostel Complex'},
+  ],
+  main_gate_parking: [
+    {label:'Main Gate 🚪',        instruction:'Start at the Main Gate. Immediately turn RIGHT (west) along the front road.',dist:0,landmark:'Gate barrier on your left'},
+    {label:'Front Campus Road',   instruction:'Walk west 100 m along the front campus boundary road.',                dist:100, landmark:'Garden hedge on the right'},
+    {label:'Parking Entry',       instruction:'Turn RIGHT at the large "P" sign. You are entering the parking zone.',  dist:180, landmark:'Yellow painted kerbs begin'},
+    {label:'Parking Area 🅿️',     instruction:'Arrived at the Parking Area. 2-wheelers zone left, 4-wheelers right.', dist:260, landmark:'Destination — Parking: 200 two-wheelers, 50 four-wheelers'},
+  ],
+
+  // ── FROM BLOCK A ──
+  block_a_comp_lab: [
+    {label:'Block A 🏛️',          instruction:'Exit Block A via the south-east staircase door.',                      dist:0,   landmark:'CSE notice boards inside'},
+    {label:'Academic Zone Road',  instruction:'Turn RIGHT and walk east 100 m.',                                      dist:100, landmark:'Block B visible on your right'},
+    {label:'Library Crossroads',  instruction:'At the T-junction, turn RIGHT (south).',                               dist:180, landmark:'Library glass facade on your left'},
+    {label:'Computer Lab Road',   instruction:'Walk south 90 m. Computer Lab entrance is on your right.',             dist:270, landmark:'Water cooler on the left'},
+    {label:'Computer Labs 💻',    instruction:'Arrived at the Computer Labs.',                                        dist:340, landmark:'Destination — CSE Computer Lab'},
+  ],
+  block_a_library: [
+    {label:'Block A 🏛️',          instruction:'Exit Block A from the main (south) entrance.',                         dist:0,   landmark:'Noticeboard wall outside'},
+    {label:'Academic Zone Road',  instruction:'Turn LEFT and walk west 80 m.',                                        dist:80,  landmark:'Block A corridor on your right'},
+    {label:'Library Approach',    instruction:'The Library building is directly ahead. Walk straight 80 m.',          dist:160, landmark:'Fountain garden on your left'},
+    {label:'Central Library 📚',  instruction:'Enter via the glass doors on the south side.',                         dist:240, landmark:'Destination — Central Library'},
+  ],
+  block_a_cafeteria: [
+    {label:'Block A 🏛️',          instruction:'Exit Block A from the main south entrance.',                           dist:0,   landmark:'Noticeboard outside'},
+    {label:'Campus Central Road', instruction:'Turn RIGHT (west) and walk 60 m.',                                    dist:60,  landmark:'Open lawn on your left'},
+    {label:'Cafeteria Lane',      instruction:'Turn LEFT at the tuck shop. Walk south 80 m.',                        dist:140, landmark:'Tuck shop kiosks on the right'},
+    {label:'Cafeteria 🍽️',        instruction:'Arrived. Enter through the east double doors.',                        dist:220, landmark:'Destination — Cafeteria'},
+  ],
+  block_a_medical: [
+    {label:'Block A 🏛️',          instruction:'Exit Block A from the main entrance and turn RIGHT.',                  dist:0,   landmark:''},
+    {label:'Academic Zone Road',  instruction:'Walk east 180 m past Block B and Block C.',                           dist:180, landmark:'Block B and C on your right'},
+    {label:'North-East Corner',   instruction:'Turn RIGHT at the corner and walk south 80 m.',                       dist:260, landmark:'CCTV pole at corner'},
+    {label:'Medical Center 🏥',   instruction:'The Medical Center is straight ahead.',                                dist:340, landmark:'Destination — Medical Center'},
+  ],
+  block_a_hostel: [
+    {label:'Block A 🏛️',          instruction:'Exit Block A. Turn LEFT (west) on the campus road.',                   dist:0,   landmark:''},
+    {label:'Flagpole Roundabout', instruction:'Walk to the Flagpole Roundabout (80 m west).',                        dist:80,  landmark:'Flagpole'},
+    {label:'Residential Avenue',  instruction:'Take the north-west exit from the roundabout. Walk 200 m.',           dist:280, landmark:'Common room block on right'},
+    {label:'Hostel Complex 🏠',   instruction:'Hostel reception straight ahead.',                                    dist:420, landmark:'Destination — Hostel'},
+  ],
+  block_a_parking: [
+    {label:'Block A 🏛️',          instruction:'Exit Block A and walk south towards the Main Gate direction.',         dist:0,   landmark:''},
+    {label:'Main Avenue',         instruction:'Walk south 200 m to the Flagpole Roundabout.',                       dist:200, landmark:'Roundabout with flagpole'},
+    {label:'Front Campus Road',   instruction:'Continue south past the roundabout 100 m, then turn LEFT (west).',   dist:320, landmark:'Admin Block on right'},
+    {label:'Parking Area 🅿️',     instruction:'Parking Area entrance straight ahead.',                              dist:440, landmark:'Destination — Parking Area'},
+  ],
+
+  // ── FROM LIBRARY ──
+  library_comp_lab: [
+    {label:'Central Library 📚',  instruction:'Exit the Library via the east side exit door.',                        dist:0,   landmark:'East exit near the staircase'},
+    {label:'Library East Path',   instruction:'Walk east 60 m along the paved pathway.',                             dist:60,  landmark:'Bicycle stand on your right'},
+    {label:'Lab Road',            instruction:'At the junction turn RIGHT (south). Walk 70 m.',                      dist:130, landmark:'Garden bed on the left'},
+    {label:'Computer Labs 💻',    instruction:'Labs entrance is on your left. Ground floor — CS Lab 01.',            dist:200, landmark:'Destination — CSE Computer Labs'},
+  ],
+  library_block_a: [
+    {label:'Central Library 📚',  instruction:'Exit the Library from the south entrance.',                           dist:0,   landmark:''},
+    {label:'Library South Path',  instruction:'Walk south 80 m to Block A road.',                                    dist:80,  landmark:'Fountain on your right'},
+    {label:'Block A Junction',    instruction:'Turn RIGHT (east) 60 m.',                                             dist:140, landmark:'Noticeboard wall ahead'},
+    {label:'Block A 🏛️',          instruction:'Enter Block A via main entrance.',                                    dist:200, landmark:'Destination — Block A'},
+  ],
+  library_cafeteria: [
+    {label:'Central Library 📚',  instruction:'Exit Library via the west entrance.',                                  dist:0,   landmark:''},
+    {label:'Library West Path',   instruction:'Walk west 80 m. You will see the cafeteria signboard.',               dist:80,  landmark:'Signboard at the turn'},
+    {label:'Cafeteria Lane',      instruction:'Turn LEFT and walk south 60 m.',                                      dist:140, landmark:'Tuck shop kiosks on the right'},
+    {label:'Cafeteria 🍽️',        instruction:'Arrived at the Cafeteria.',                                           dist:200, landmark:'Destination — Cafeteria'},
+  ],
+  library_medical: [
+    {label:'Central Library 📚',  instruction:'Exit Library via the east exit. Turn RIGHT.',                         dist:0,   landmark:''},
+    {label:'Academic Zone Road',  instruction:'Walk east 200 m past Block B and Block C.',                           dist:200, landmark:'Blocks on your right'},
+    {label:'Medical Lane',        instruction:'Turn LEFT at the Red Cross signboard. Walk north 60 m.',              dist:260, landmark:'Red Cross signboard'},
+    {label:'Medical Center 🏥',   instruction:'Medical Center straight ahead.',                                      dist:320, landmark:'Destination — Medical Center'},
+  ],
+  library_hostel: [
+    {label:'Central Library 📚',  instruction:'Exit Library via the north exit.',                                    dist:0,   landmark:''},
+    {label:'North Campus Road',   instruction:'Walk north-west 120 m towards the Residential Zone.',                 dist:120, landmark:'Cricket pitch visible ahead-left'},
+    {label:'Hostel Lane',         instruction:'Turn LEFT at the hostel signboard and walk 100 m.',                   dist:220, landmark:'Common room on right'},
+    {label:'Hostel Complex 🏠',   instruction:'Hostel reception is ahead.',                                          dist:320, landmark:'Destination — Hostel Complex'},
+  ],
+  library_parking: [
+    {label:'Central Library 📚',  instruction:'Exit Library via south entrance and walk to Main Avenue.',             dist:0,   landmark:''},
+    {label:'Main Avenue',         instruction:'Walk south 150 m toward Main Gate direction.',                        dist:150, landmark:'Flagpole roundabout on left'},
+    {label:'Front Campus Road',   instruction:'Turn RIGHT (west) at the roundabout.',                                dist:220, landmark:'Admin Block on right'},
+    {label:'Parking Area 🅿️',     instruction:'Walk 100 m west. Parking Area entrance on your left.',               dist:320, landmark:'Destination — Parking Area'},
+  ],
+
+  // ── FROM CAFETERIA ──
+  cafeteria_comp_lab: [
+    {label:'Cafeteria 🍽️',        instruction:'Exit Cafeteria from the east doors.',                                  dist:0,   landmark:'Tuck shops on right'},
+    {label:'Cafeteria East Road', instruction:'Walk east 80 m to the main campus road.',                              dist:80,  landmark:'Open lawn on your left'},
+    {label:'Library Crossroads',  instruction:'Cross the road and continue east 100 m.',                              dist:180, landmark:'Library on your left'},
+    {label:'Computer Lab Road',   instruction:'Walk south 70 m. Lab entrance on your left.',                         dist:250, landmark:'Water cooler on right'},
+    {label:'Computer Labs 💻',    instruction:'Arrived at the Computer Labs.',                                        dist:320, landmark:'Destination — CSE Computer Labs'},
+  ],
+  cafeteria_library: [
+    {label:'Cafeteria 🍽️',        instruction:'Exit Cafeteria east doors and walk east 80 m.',                       dist:0,   landmark:''},
+    {label:'Campus Road',         instruction:'Cross the campus road. Library is straight ahead 60 m.',              dist:80,  landmark:'Fountain garden ahead'},
+    {label:'Central Library 📚',  instruction:'Enter Library via the west entrance.',                                 dist:180, landmark:'Destination — Central Library'},
+  ],
+  cafeteria_block_a: [
+    {label:'Cafeteria 🍽️',        instruction:'Exit Cafeteria east doors.',                                           dist:0,   landmark:''},
+    {label:'Cafeteria East Road', instruction:'Walk east 60 m then turn RIGHT (south) at the tuck shop corner.',     dist:60,  landmark:'Tuck shop corner'},
+    {label:'Block A Road',        instruction:'Walk south 80 m. Block A on your right.',                             dist:140, landmark:'Noticeboard wall on the right'},
+    {label:'Block A 🏛️',          instruction:'Enter Block A main entrance.',                                        dist:200, landmark:'Destination — Block A'},
+  ],
+  cafeteria_hostel: [
+    {label:'Cafeteria 🍽️',        instruction:'Exit Cafeteria via the north exit.',                                   dist:0,   landmark:''},
+    {label:'North-West Campus Road',instruction:'Walk north-west 100 m toward the Residential Zone.',                dist:100, landmark:'Common room block visible'},
+    {label:'Hostel Lane',         instruction:'Turn LEFT at the hostel signboard and walk 120 m.',                   dist:220, landmark:'Cricket pitch on left'},
+    {label:'Hostel Complex 🏠',   instruction:'Arrived at Hostel reception.',                                        dist:320, landmark:'Destination — Hostel Complex'},
+  ],
+  cafeteria_medical: [
+    {label:'Cafeteria 🍽️',        instruction:'Exit Cafeteria east doors and walk east 200 m.',                      dist:0,   landmark:''},
+    {label:'East Campus Road',    instruction:'Continue east past Block C. Turn RIGHT at the corner.',               dist:200, landmark:'Block C on left'},
+    {label:'Medical Lane',        instruction:'Walk south 80 m. Red Cross board on your right.',                     dist:280, landmark:'Red Cross signboard'},
+    {label:'Medical Center 🏥',   instruction:'Medical Center straight ahead.',                                      dist:340, landmark:'Destination — Medical Center'},
+  ],
+  cafeteria_parking: [
+    {label:'Cafeteria 🍽️',        instruction:'Exit Cafeteria via the south doors.',                                  dist:0,   landmark:''},
+    {label:'South Campus Road',   instruction:'Walk south 150 m to the Main Avenue.',                                dist:150, landmark:'Main Avenue tree-line ahead'},
+    {label:'Front Campus Road',   instruction:'Turn RIGHT (west) at the roundabout and walk 100 m.',                 dist:270, landmark:'Admin Block on right'},
+    {label:'Parking Area 🅿️',     instruction:'Parking entrance on your left.',                                      dist:350, landmark:'Destination — Parking Area'},
+  ],
+
+  // ── FROM HOSTEL ──
+  hostel_comp_lab: [
+    {label:'Hostel Complex 🏠',   instruction:'Exit Hostel from the main south gate.',                               dist:0,   landmark:'Reception behind you'},
+    {label:'Hostel South Road',   instruction:'Walk south 150 m on the tree-lined lane.',                           dist:150, landmark:'Cricket pitch on right'},
+    {label:'Flagpole Roundabout', instruction:'At the roundabout, take the RIGHT exit into the Academic Zone.',     dist:300, landmark:'Flagpole roundabout'},
+    {label:'Academic Zone Road',  instruction:'Walk east 80 m past Block A to Library Crossroads.',                 dist:380, landmark:'Block A on your left'},
+    {label:'Library Crossroads',  instruction:'Turn RIGHT (south) and walk 90 m.',                                  dist:470, landmark:'Library on your left'},
+    {label:'Computer Labs 💻',    instruction:'Labs entrance on your left.',                                         dist:540, landmark:'Destination — CSE Computer Labs'},
+  ],
+  hostel_library: [
+    {label:'Hostel Complex 🏠',   instruction:'Exit Hostel south gate.',                                             dist:0,   landmark:''},
+    {label:'Hostel South Road',   instruction:'Walk south 150 m.',                                                   dist:150, landmark:'Cricket pitch on right'},
+    {label:'Library North Path',  instruction:'Continue south 80 m. Library is straight ahead.',                    dist:230, landmark:'Fountain garden on right'},
+    {label:'Central Library 📚',  instruction:'Enter Library via the north entrance.',                               dist:310, landmark:'Destination — Central Library'},
+  ],
+  hostel_cafeteria: [
+    {label:'Hostel Complex 🏠',   instruction:'Exit Hostel south gate. Walk south 150 m.',                           dist:0,   landmark:''},
+    {label:'Campus Central Road', instruction:'At the campus road turn RIGHT (west) 100 m.',                        dist:250, landmark:'Cafeteria signboard visible'},
+    {label:'Cafeteria 🍽️',        instruction:'Enter Cafeteria from the north entrance.',                            dist:320, landmark:'Destination — Cafeteria'},
+  ],
+  hostel_block_a: [
+    {label:'Hostel Complex 🏠',   instruction:'Exit south gate. Walk south 150 m.',                                  dist:0,   landmark:''},
+    {label:'Flagpole Roundabout', instruction:'Reach the Flagpole Roundabout. Take the RIGHT exit.',                dist:300, landmark:'Flagpole roundabout'},
+    {label:'Academic Zone Road',  instruction:'Walk east 80 m. Block A on your left.',                              dist:380, landmark:'Noticeboard wall on the left'},
+    {label:'Block A 🏛️',          instruction:'Enter Block A main entrance.',                                        dist:430, landmark:'Destination — Block A'},
+  ],
+  hostel_medical: [
+    {label:'Hostel Complex 🏠',   instruction:'Exit Hostel east gate (side gate).',                                  dist:0,   landmark:'Side gate near Block D'},
+    {label:'East Perimeter Road', instruction:'Walk south-east 120 m along the perimeter road.',                    dist:120, landmark:'Boundary wall on right'},
+    {label:'Medical Lane',        instruction:'Turn RIGHT at the Red Cross signboard. Walk 60 m.',                  dist:180, landmark:'Red Cross signboard'},
+    {label:'Medical Center 🏥',   instruction:'Medical Center straight ahead.',                                      dist:240, landmark:'Destination — Medical Center'},
+  ],
+  hostel_parking: [
+    {label:'Hostel Complex 🏠',   instruction:'Exit Hostel main south gate.',                                        dist:0,   landmark:''},
+    {label:'Hostel South Road',   instruction:'Walk south 150 m to the Main Avenue.',                               dist:150, landmark:''},
+    {label:'Main Avenue',         instruction:'Turn RIGHT (west) at the roundabout and walk 150 m.',                dist:320, landmark:'Admin Block on right'},
+    {label:'Parking Area 🅿️',     instruction:'Parking Area entrance on your left.',                                dist:440, landmark:'Destination — Parking Area'},
+  ],
+
+  // ── FROM MEDICAL CENTER ──
+  medical_comp_lab: [
+    {label:'Medical Center 🏥',   instruction:'Exit Medical Center from the south exit.',                           dist:0,   landmark:'Emergency entrance on your left'},
+    {label:'Medical South Road',  instruction:'Walk south 80 m.',                                                   dist:80,  landmark:''},
+    {label:'East Campus Road',    instruction:'Turn RIGHT (west) and walk 120 m past Block C.',                     dist:200, landmark:'Block C on your right'},
+    {label:'Library Crossroads',  instruction:'At the T-junction turn LEFT (south) 90 m.',                         dist:320, landmark:'Library on your right'},
+    {label:'Computer Labs 💻',    instruction:'Labs entrance on your left.',                                         dist:410, landmark:'Destination — CSE Computer Labs'},
+  ],
+  medical_library: [
+    {label:'Medical Center 🏥',   instruction:'Exit south. Walk west 200 m past Block C and Block B.',              dist:0,   landmark:''},
+    {label:'Library North Road',  instruction:'Turn LEFT (south) at the Library North sign.',                       dist:200, landmark:'Library building visible ahead'},
+    {label:'Central Library 📚',  instruction:'Enter Library via the north entrance.',                               dist:280, landmark:'Destination — Central Library'},
+  ],
+  medical_block_a: [
+    {label:'Medical Center 🏥',   instruction:'Exit south. Walk west 300 m along the Academic Zone road.',          dist:0,   landmark:''},
+    {label:'Block A Junction',    instruction:'Block A is on your LEFT after 300 m.',                               dist:300, landmark:'Noticeboard wall on the left'},
+    {label:'Block A 🏛️',          instruction:'Enter Block A main entrance.',                                       dist:360, landmark:'Destination — Block A'},
+  ],
+  medical_cafeteria: [
+    {label:'Medical Center 🏥',   instruction:'Exit south exit. Walk west 250 m.',                                  dist:0,   landmark:''},
+    {label:'Campus Central Road', instruction:'Cross the road at the zebra crossing and walk west 60 m.',           dist:310, landmark:'Cafeteria signboard visible'},
+    {label:'Cafeteria 🍽️',        instruction:'Enter Cafeteria from the east entrance.',                            dist:360, landmark:'Destination — Cafeteria'},
+  ],
+  medical_hostel: [
+    {label:'Medical Center 🏥',   instruction:'Exit north exit of the Medical Center.',                             dist:0,   landmark:''},
+    {label:'North Perimeter Road',instruction:'Walk north-west 120 m.',                                             dist:120, landmark:'Hostel wall visible ahead'},
+    {label:'Hostel East Lane',    instruction:'Turn LEFT at the Hostel East Lane sign and walk 80 m.',              dist:200, landmark:'Block D hostel on right'},
+    {label:'Hostel Complex 🏠',   instruction:'Arrived at Hostel east gate.',                                       dist:280, landmark:'Destination — Hostel Complex'},
+  ],
+  medical_parking: [
+    {label:'Medical Center 🏥',   instruction:'Exit Medical Center south. Walk south 80 m.',                        dist:0,   landmark:''},
+    {label:'East Perimeter Road', instruction:'Turn RIGHT (west) and walk 200 m.',                                  dist:280, landmark:'Main Gate area ahead'},
+    {label:'Front Campus Road',   instruction:'Turn RIGHT at the "P" sign. Walk 80 m.',                            dist:360, landmark:'Yellow kerbs begin'},
+    {label:'Parking Area 🅿️',     instruction:'Arrived at Parking Area.',                                           dist:420, landmark:'Destination — Parking Area'},
+  ],
+
+  // ── FROM PARKING ──
+  parking_comp_lab: [
+    {label:'Parking Area 🅿️',     instruction:'Exit Parking via the east gate.',                                    dist:0,   landmark:''},
+    {label:'Front Campus Road',   instruction:'Walk east 100 m to the Main Avenue.',                               dist:100, landmark:'Admin Block on left'},
+    {label:'Main Avenue',         instruction:'Walk north 200 m to the Flagpole Roundabout.',                      dist:300, landmark:'Flagpole roundabout'},
+    {label:'Academic Zone Road',  instruction:'Take RIGHT exit. Walk east 80 m to Library Crossroads.',            dist:400, landmark:'Block A on left'},
+    {label:'Library Crossroads',  instruction:'Turn RIGHT (south) 90 m.',                                          dist:490, landmark:'Library on left'},
+    {label:'Computer Labs 💻',    instruction:'Labs entrance on your left.',                                        dist:560, landmark:'Destination — CSE Computer Labs'},
+  ],
+  parking_library: [
+    {label:'Parking Area 🅿️',     instruction:'Exit east gate. Walk east 100 m to Main Avenue.',                   dist:0,   landmark:''},
+    {label:'Main Avenue',         instruction:'Walk north 200 m to Flagpole Roundabout.',                          dist:300, landmark:'Flagpole roundabout'},
+    {label:'Library Road',        instruction:'Go STRAIGHT at roundabout. Library is 150 m north.',                dist:450, landmark:'Fountain garden on left'},
+    {label:'Central Library 📚',  instruction:'Enter Library via the south glass doors.',                          dist:560, landmark:'Destination — Central Library'},
+  ],
+  parking_block_a: [
+    {label:'Parking Area 🅿️',     instruction:'Exit east gate. Walk east then north to the Flagpole Roundabout.',  dist:0,   landmark:''},
+    {label:'Flagpole Roundabout', instruction:'Take RIGHT exit into Academic Zone. Walk 80 m.',                    dist:300, landmark:'Roundabout'},
+    {label:'Block A 🏛️',          instruction:'Block A is on your left.',                                          dist:380, landmark:'Destination — Block A'},
+  ],
+  parking_cafeteria: [
+    {label:'Parking Area 🅿️',     instruction:'Exit east gate. Walk east 100 m then north 150 m.',                 dist:0,   landmark:''},
+    {label:'Cafeteria Lane',      instruction:'Turn LEFT at the tuck shops and walk 50 m.',                        dist:300, landmark:'Tuck shop kiosks'},
+    {label:'Cafeteria 🍽️',        instruction:'Arrived at Cafeteria.',                                             dist:340, landmark:'Destination — Cafeteria'},
+  ],
+  parking_hostel: [
+    {label:'Parking Area 🅿️',     instruction:'Exit Parking via the east gate. Walk north on Main Avenue 200 m.',  dist:0,   landmark:''},
+    {label:'Flagpole Roundabout', instruction:'At the roundabout take the north-west exit.',                       dist:300, landmark:'Roundabout'},
+    {label:'Residential Avenue',  instruction:'Walk north-west 200 m.',                                            dist:500, landmark:'Common room on right'},
+    {label:'Hostel Complex 🏠',   instruction:'Hostel reception ahead.',                                           dist:620, landmark:'Destination — Hostel'},
+  ],
+  parking_medical: [
+    {label:'Parking Area 🅿️',     instruction:'Exit Parking east gate. Walk east along the front road 200 m.',    dist:0,   landmark:''},
+    {label:'East Perimeter Road', instruction:'Turn LEFT (north) at the Red Cross signboard. Walk 80 m.',         dist:280, landmark:'Red Cross signboard'},
+    {label:'Medical Center 🏥',   instruction:'Medical Center straight ahead.',                                    dist:360, landmark:'Destination — Medical Center'},
+  ],
+
+  // ── FROM COMPUTER LABS ──
+  comp_lab_main_gate: [
+    {label:'Computer Labs 💻',    instruction:'Exit Computer Labs via the main door.',                              dist:0,   landmark:''},
+    {label:'Lab Road',            instruction:'Walk north 90 m to the Library Crossroads.',                        dist:90,  landmark:'Water cooler on right'},
+    {label:'Library Crossroads',  instruction:'Turn LEFT (west). Walk 80 m to Block A junction.',                  dist:170, landmark:'Library on your right'},
+    {label:'Block A Junction',    instruction:'Continue west/south-west 80 m to Flagpole Roundabout.',             dist:250, landmark:'Block A on right'},
+    {label:'Flagpole Roundabout', instruction:'Take the south exit onto Main Avenue.',                             dist:320, landmark:'Flagpole in centre'},
+    {label:'Main Gate 🚪',        instruction:'Walk south 120 m. Main Gate ahead.',                                dist:440, landmark:'Destination — Main Gate'},
+  ],
+};
+
+// Readable location names
+const locNames = {
+  main_gate:'Main Gate',block_a:'Block A — CSE',block_b:'Block B — ECE',
+  block_c:'Block C — MECH',library:'Central Library',cafeteria:'Cafeteria',
+  comp_lab:'Computer Labs',medical:'Medical Center',hostel:'Hostel Complex',parking:'Parking Area'
+};
+
+// Accessible route overlays (alternative last instruction)
+const accessibleNotes = {
+  main_gate_library:'♿ Use the ramp on Library West side. Automatic doors at entrance.',
+  main_gate_block_a:'♿ Wheelchair ramp on Block A south side. Elevator to upper floors.',
+  main_gate_cafeteria:'♿ Ground floor, fully flat route. Wide doorways.',
+  main_gate_medical:'♿ Fully flat perimeter road. Wide emergency entrance.',
+  library_comp_lab:'♿ Ground floor lab — no stairs required.',
+  hostel_medical:'♿ East gate route is fully flat.',
+};
+
+const aiResponses = {
+  'where is the library': '📚 The **Central Library** is located at the heart of campus, near Block B junction.\n\n📍 Route from Main Gate:\nMain Gate → Main Road → Library Crossroads → Central Library\n⏱️ Est. walking time: ~6 minutes\n\n♿ Wheelchair accessible route available.',
+  'find dr. rao': '👤 **Dr. A. Rao**\n🏛️ Department: Computer Science & Engineering\n🚪 Cabin: Room 203, Block B (2nd Floor)\n⏱️ From Main Gate: ~8 minutes\n\n📍 Route: Main Gate → Main Road → Block B Entrance → 2nd Floor → Room 203',
+  'nearest restroom': '🚻 Nearest Restrooms to your current location:\n1. Block A Ground Floor (50m)\n2. Library Building (80m)\n3. Cafeteria Wing (120m)\n\n♿ Accessible restrooms: Block A and Library.',
+  'show campus events today': '📅 **Today\'s Campus Events:**\n1. 🎓 AI Symposium 2025 — Seminar Hall, Block A — 10:00 AM\n2. 💼 CSE Dept Meet — Room 301, Block B — 2:00 PM\n3. 🏆 Sports Day Registration — Main Block — 4:30 PM\n4. 📖 Library Book Fair — Central Library — All Day',
+  'cafeteria timings': '🍽️ **Cafeteria Hours:**\nBreakfast: 7:30 AM – 9:30 AM\nLunch: 12:00 PM – 2:30 PM\nSnacks: 4:00 PM – 6:00 PM\nDinner: 7:30 PM – 9:30 PM\n\n📍 Route from Block A: 5 min walk south.',
+  'wheelchair accessible route to library': '♿ **Accessible Route to Library:**\nMain Gate → Ramp A (near Admin Block) → Ground Level Path → Library South Entrance (automatic door)\n⏱️ Est. time: 10 minutes\n🛗 Elevator inside library: Ground to 3rd floor.',
+};
+
+// ===================== UTILS =====================
+function showToast(msg,dur=3000){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+// ===================== HERO SEARCH =====================
+function setSearch(v){document.getElementById('heroSearch').value=v;}
+function heroNavigate(){
+  const v=document.getElementById('heroSearch').value.trim();
+  if(!v){showToast('⚠️ Please enter a destination!');return;}
+  showToast(`🧭 Finding route to "${v}"...`);
+  document.getElementById('navigate').scrollIntoView({behavior:'smooth'});
+}
+
+// ===================== STATS COUNTER =====================
+function animateCount(id,target,suffix=''){
+  let current=0;const step=Math.ceil(target/60);
+  const timer=setInterval(()=>{
+    current=Math.min(current+step,target);
+    document.getElementById(id).textContent=current.toLocaleString()+suffix;
+    if(current>=target)clearInterval(timer);
+  },30);
+}
+setTimeout(()=>{
+  animateCount('s1',47);animateCount('s2',128);
+  animateCount('s3',86);animateCount('s4',1284);animateCount('s5',32);
+},500);
+
+// ===================== MAP =====================
+function selectBuilding(name,icon){
+  document.querySelectorAll('.map-path').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  showToast(`${icon} ${name} selected! Scroll to navigate.`);
+  // Animate user dot to building center
+  const rect=event.currentTarget.getBoundingClientRect();
+  const map=document.getElementById('campusMap').getBoundingClientRect();
+  const dot=document.getElementById('userDot');
+  dot.classList.remove('hidden');
+  dot.style.left=(rect.left-map.left+rect.width/2)+'px';
+  dot.style.top=(rect.top-map.top+rect.height/2)+'px';
+}
+
+// ===================== ROUTE CALCULATOR =====================
+function calculateRoute(){
+  const from=document.getElementById('fromLoc').value;
+  const to=document.getElementById('toLoc').value;
+  const accessible=document.getElementById('accessCheck').checked;
+  const avoidCrowd=document.getElementById('avoidCrowd').checked;
+  if(from===to){showToast('⚠️ Start and destination cannot be same!');return;}
+
+  const key=from+'_'+to;
+  const reverseKey=to+'_'+from;
+
+  let steps=routes[key];
+  if(!steps && routes[reverseKey]){
+    // Auto-reverse: flip the array, swap LEFT/RIGHT in instructions
+    steps=[...routes[reverseKey]].reverse().map((s,i,arr)=>({
+      ...s,
+      instruction:i===0
+        ?'Start here and follow the reversed path.'
+        :i===arr.length-1
+          ?s.instruction
+          :s.instruction
+            .replace(/Turn RIGHT/g,'__R__')
+            .replace(/Turn LEFT/g,'Turn RIGHT')
+            .replace(/__R__/g,'Turn LEFT')
+    }));
+  }
+  if(!steps){
+    steps=[
+      {label:locNames[from]||from,instruction:'Start here.',dist:0,landmark:'Your starting point'},
+      {label:'Campus Central Junction',instruction:'Head to the campus central road and follow signboards.',dist:150,landmark:'Campus directional signboard'},
+      {label:locNames[to]||to,instruction:'Arrived at your destination.',dist:300,landmark:'Destination reached'},
+    ];
+  }
+
+  if(accessible && accessibleNotes[key]){
+    steps=[...steps];
+    steps[steps.length-1]={...steps[steps.length-1],instruction:accessibleNotes[key]};
+  }
+
+  const totalDist=steps[steps.length-1].dist;
+  const walkingTime=Math.ceil(totalDist/80);
+  const result=document.getElementById('routeResult');
+  const stepsDiv=document.getElementById('routeSteps');
+  const metaDiv=document.getElementById('routeMeta');
+
+  stepsDiv.innerHTML=steps.map((s,i)=>{
+    const isStart=i===0,isEnd=i===steps.length-1;
+    const segDist=i>0?(s.dist-steps[i-1].dist):0;
+    return `<div class="route-step">
+      <div class="step-dot ${isStart?'start':isEnd?'end':'mid'}">${i+1}</div>
+      <div class="step-info">
+        <h4>${s.label}</h4>
+        <p>${s.instruction}</p>
+        ${s.landmark?`<p style="font-size:0.72rem;color:var(--accent);margin-top:3px;">📍 ${s.landmark}</p>`:''}
+        ${segDist>0?`<p style="font-size:0.7rem;color:var(--muted);margin-top:2px;">↕ ${segDist} m from previous stop</p>`:''}
+      </div></div>`;
+  }).join('');
+
+  metaDiv.innerHTML=`
+    <div class="meta-item"><div class="meta-val">~${totalDist} m</div><div class="meta-key">Total Distance</div></div>
+    <div class="meta-item"><div class="meta-val">${walkingTime} min</div><div class="meta-key">Walking Time</div></div>
+    <div class="meta-item"><div class="meta-val">${steps.length-1}</div><div class="meta-key">Waypoints</div></div>
+    <div class="meta-item"><div class="meta-val">A*</div><div class="meta-key">Algorithm</div></div>
+    ${accessible?'<div class="meta-item"><div class="meta-val">♿ Yes</div><div class="meta-key">Accessible</div></div>':''}
+    ${avoidCrowd?'<div class="meta-item"><div class="meta-val">✅ Low</div><div class="meta-key">Crowd</div></div>':''}
+  `;
+  result.classList.add('show');
+  showToast(`✅ Route found! ${steps.length-1} waypoints · ~${walkingTime} min · ${totalDist} m`);
+}
+
+// ===================== AI CHAT =====================
+const chatBody=document.getElementById('chatBody');
+let voiceActive=false;
+function addMsg(text,type){
+  const div=document.createElement('div');
+  div.className='msg '+type;
+  div.innerHTML=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  chatBody.appendChild(div);
+  chatBody.scrollTop=chatBody.scrollHeight;
+  return div;
+}
+function showTyping(){
+  const div=document.createElement('div');
+  div.className='msg typing';div.id='typing';
+  div.innerHTML='<div class="typing-dots"><span></span><span></span><span></span></div>';
+  chatBody.appendChild(div);chatBody.scrollTop=chatBody.scrollHeight;
+}
+function removeTyping(){const t=document.getElementById('typing');if(t)t.remove();}
+function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();if(!text)return;
+  input.value='';
+  addMsg(text,'user');
+  showTyping();
+  setTimeout(()=>{
+    removeTyping();
+    const key=text.toLowerCase();
+    let resp='🤔 I can help with campus navigation! Try asking about:\n• Library location\n• Faculty finder\n• Nearest services\n• Route to any building\n• Today\'s events';
+    for(const k in aiResponses){if(key.includes(k)){resp=aiResponses[k];break;}}
+    addMsg(resp,'bot');
+  },1200+Math.random()*600);
+}
+function sendChip(text){
+  document.getElementById('chatInput').value=text;
+  sendMsg();
+}
+function toggleVoice(){
+  voiceActive=!voiceActive;
+  const btn=document.getElementById('voiceBtn');
+  const wave=document.getElementById('voiceWave');
+  if(voiceActive){
+    btn.textContent='🔴';wave.classList.add('active');
+    showToast('🎤 Voice active — say a command!');
+    addMsg('🎤 <em>Listening for voice command...</em>','bot');
+    setTimeout(()=>{
+      voiceActive=false;btn.textContent='🎤';wave.classList.remove('active');
+      addMsg('Voice recognition demo: "Where is the library?"\n\n'+aiResponses['where is the library'],'bot');
+    },2500);
+  } else {
+    btn.textContent='🎤';wave.classList.remove('active');
+  }
+}
+
+// ===================== FACULTY =====================
+function renderFaculty(data){
+  const list=document.getElementById('facultyList');
+  if(!data.length){list.innerHTML='<p style="color:var(--muted);text-align:center;padding:2rem;">No results found</p>';return;}
+  list.innerHTML=data.map(f=>`
+    <div class="faculty-card">
+      <div class="faculty-info">
+        <div class="faculty-avatar" style="background:${f.color};color:${f.tc}">${f.avatar}</div>
+        <div class="faculty-details">
+          <h4>${f.name}</h4>
+          <p>Dept: ${f.dept} · ${f.block}</p>
+        </div>
+      </div>
+      <div class="faculty-room">
+        <span>${f.room}</span>
+        <small>${f.block}</small>
+        <div class="route-tag" onclick="showToast('🧭 Route to ${f.name}: Main Gate → Main Road → ${f.block} → ${f.room}')">Get Route →</div>
+      </div>
+    </div>
+  `).join('');
+}
+function searchFaculty(){
+  const q=document.getElementById('facultyInput').value.toLowerCase();
+  if(!q){renderFaculty(facultyData);return;}
+  renderFaculty(facultyData.filter(f=>
+    f.name.toLowerCase().includes(q)||
+    f.dept.toLowerCase().includes(q)||
+    f.room.toLowerCase().includes(q)||
+    f.block.toLowerCase().includes(q)
+  ));
+}
+renderFaculty(facultyData);
+
+// ===================== HEATMAP =====================
+function buildHeatmap(){
+  const grid=document.getElementById('heatmapGrid');
+  const data=[
+    3,6,8,9,7,4,2,1,
+    5,9,10,9,8,6,3,2,
+    4,8,9,7,6,5,4,3,
+    6,9,8,6,5,4,3,2,
+    3,6,7,8,7,5,3,2,
+    2,4,6,7,6,4,2,1,
+    1,2,4,5,4,3,2,1,
+    1,1,2,3,2,1,1,0
+  ];
+  const cols=['#0d1a2e','#0a3d2e','#0f5c35','#1a7a3c','#28a745','#ffd60a','#f77f00','#f72585'];
+  grid.innerHTML=data.map((v,i)=>`
+    <div class="hm-cell" style="background:${cols[Math.min(v,7)]};opacity:${0.4+v*0.06}"
+      title="Zone ${i+1}: ${['Low','Low','Moderate','Moderate','High','High','Very High','Extreme'][Math.min(v,7)]} traffic"
+      onclick="showToast('Zone ${i+1}: ${['Low','Moderate','High','Very High'][Math.floor(v/3)]} crowd density')">
+    </div>
+  `).join('');
+}
+buildHeatmap();
+
+// Refresh heatmap every 3s
+setInterval(()=>{
+  const cells=document.querySelectorAll('.hm-cell');
+  const cols=['#0d1a2e','#0a3d2e','#0f5c35','#1a7a3c','#28a745','#ffd60a','#f77f00','#f72585'];
+  cells.forEach(c=>{
+    const v=Math.floor(Math.random()*8);
+    c.style.background=cols[v];
+    c.style.opacity=0.4+v*0.06;
+  });
+},3000);
+
+// ===================== ADMIN TAB =====================
+function adminTab(el,tab){
+  document.querySelectorAll('.admin-nav-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  showToast(`📊 Admin: ${tab} view loaded`);
+}
+
+// ===================== SCROLL ANIMATIONS =====================
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.style.opacity='1';
+      e.target.style.transform='translateY(0)';
+    }
+  });
+},{threshold:0.1});
+
+document.querySelectorAll('.feature-card,.co-card,.stat-card,.access-card,.tech-card,.future-card').forEach(el=>{
+  el.style.opacity='0';
+  el.style.transform='translateY(20px)';
+  el.style.transition='opacity 0.6s ease, transform 0.6s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
